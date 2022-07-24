@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+from src.HTTPCommunication import HTTPConnection
 
 class Garden():
     
@@ -9,7 +10,7 @@ class Garden():
     _lenY = 12
     _nMaxFields = _lenX * _lenY
     
-    def __init__(self, httpConnection, gardenID):
+    def __init__(self, httpConnection: HTTPConnection, gardenID):
         self._httpConn = httpConnection
         self._id = gardenID
         self._logGarden = logging.getLogger('bot.Garden_' + str(gardenID))
@@ -138,22 +139,22 @@ class Garden():
             for field in range(1, self._nMaxFields + 1):
                 if planted == amount: break
             
-            fieldsToPlant = self._getAllFieldIDsFromFieldIDAndSizeAsIntList(field, sx, sy)
-            
-            if (self._isPlantGrowableOnField(field, emptyFields, fieldsToPlant, sx)):
-                fields = self._getAllFieldIDsFromFieldIDAndSizeAsString(field, sx, sy)
-                self._httpConn.growPlant(field, plantID, self._id, fields)
-                planted += 1
+                fieldsToPlant = self._getAllFieldIDsFromFieldIDAndSizeAsIntList(field, sx, sy)
+                
+                if (self._isPlantGrowableOnField(field, emptyFields, fieldsToPlant, sx)):
+                        fields = self._getAllFieldIDsFromFieldIDAndSizeAsString(field, sx, sy)
+                        self._httpConn.growPlant(field, plantID, self._id, fields)
+                        planted += 1
 
-                #Nach dem Anbau belegte Felder aus der Liste der leeren Felder loeschen
-                fieldsToPlantSet = set(fieldsToPlant)
-                emptyFieldsSet = set(emptyFields)
-                tmpSet = emptyFieldsSet - fieldsToPlantSet
-                emptyFields = list(tmpSet)
+                        #Nach dem Anbau belegte Felder aus der Liste der leeren Felder loeschen
+                        fieldsToPlantSet = set(fieldsToPlant)
+                        emptyFieldsSet = set(emptyFields)
+                        tmpSet = emptyFieldsSet - fieldsToPlantSet
+                        emptyFields = list(tmpSet)
 
         except:
             self._logGarden.error('Im Garten ' + str(self._id) + ' konnte nicht gepflanzt werden.')
-            return 0
+            return 0    
         else:
             msg = 'Im Garten ' + str(self._id) + ' wurden ' + str(planted) + ' Pflanzen gepflanzt.'
             self._logGarden.info(msg)

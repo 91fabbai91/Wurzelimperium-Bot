@@ -13,6 +13,7 @@ from src.Garten import Garden, AquaGarden
 from src.Lager import Storage
 from src.Marktplatz import Marketplace
 from src.Produktdaten import ProductData
+from src.Stadtpark import Park
 import logging
 
 
@@ -35,6 +36,7 @@ class WurzelBot(object):
         self.garten = []
         self.wassergarten = None
         self.marktplatz = Marketplace(self.__HTTPConn)
+        self.park = Park(self.__HTTPConn)
 
 
     def __initGardens(self):
@@ -318,17 +320,24 @@ class WurzelBot(object):
     def test(self):
         #TODO: Für Testzwecke, kann später entfernt werden.
         #return self.__HTTPConn.getUsrList(1, 15000)
-        """
         tradeableProducts = self.marktplatz.getAllTradableProducts()
         for id in tradeableProducts:
             product = self.productData.getProductByID(id)
-            print product.getName()
+            print(product.getName())
             gaps = self.marktplatz.findBigGapInProductOffers(product.getID(), product.getPriceNPC())
             if len(gaps) > 0:
-                print gaps
-            print ''
-        """
+                print(gaps)
+            print('')
+
         #self.__HTTPConn.growPlantInAquaGarden(162, 9)
-        self.wassergarten.waterPlants()
+        #self.wassergarten.waterPlants()
 
 
+    def collectCashFromPark(self):
+        self.park.collectCashFromCashpoint()
+
+    def getRenewableItemsFromPark(self):
+        return self.park.getRenewableItemsFromPark()
+
+    def renewAllItemsInPark(self):
+        return self.park.renewAllItemsInPark()

@@ -2,8 +2,8 @@ from logging import log
 import src.Main as wbot
 
 # Login data
-user = ''
-pw = ''
+user = 'Bongomedia'
+pw = '3df5da34'
 server = 46
 
 # Global vars

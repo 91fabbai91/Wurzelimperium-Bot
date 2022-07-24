@@ -288,6 +288,89 @@ class HTTPConnection(object):
         else:
             pass
 
+    def __goToPark(self):
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                        'wunr=' + self.__userID,
+            'Connection': 'Keep-Alive'}
+
+        adresse = 'http://s' + str(self.__Session.getServer()) + \
+                  '.wurzelimperium.de/ajax/ajax.php?do=park_init' \
+                   + '&token=' + self.__token
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers = headers)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+        except:
+            raise
+        else:
+            return jContent
+
+    def __initCashPoint(self):
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                'wunr=' + self.__userID,
+            'Connection': 'Keep-Alive'}
+
+        adresse = 'http://s' + str(self.__Session.getServer()) + \
+                  '.wurzelimperium.de/ajax/ajax.php?do=park_initcashpoint' \
+                   + '&token=' + self.__token
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers = headers)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+        except:
+            raise
+        else:
+            return jContent["data"]["data"]["cashpoint"]
+        
+    def collectCashPointsFromPark(self):
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                'wunr=' + self.__userID,
+            'Connection': 'Keep-Alive'}
+
+        adresse = 'http://s' + str(self.__Session.getServer()) + \
+                  '.wurzelimperium.de/ajax/ajax.php?do=park_clearcashpoint=' \
+                   + '&token=' + self.__token
+
+        self.__goToPark()
+        cashpoints = self.__initCashPoint()
+        if(cashpoints["money"]>0):
+            try:
+                response, content = self.__webclient.request(adresse, 'GET', headers = headers)
+                self.__checkIfHTTPStateIsOK(response)
+            except:
+                raise
+            else:
+                pass
+        return cashpoints
+
+    def getRenewableDekoFromPark(self,parkID=1):
+        jContent = self.__goToPark()
+        items = jContent["data"]["data"]["park"][str(parkID)]["items"]
+        renewableItems = {}
+        for i, item in items.items():
+
+            if item["remain"] < 0:
+                renewableItems.update({i:item})
+        return renewableItems
+        
+    def renewItemsInPark(self,itemTile,parkID=1):
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+            'wunr=' + self.__userID,
+            'Connection': 'Keep-Alive'}
+
+        adresse = 'http://s' + str(self.__Session.getServer()) + \
+                  '.wurzelimperium.de/ajax/ajax.php?do=park_renewitem&parkid=' + str(parkID) \
+                + '&tile=' + str(itemTile) + '&token=' + self.__token
+
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers = headers)
+            self.__checkIfHTTPStateIsOK(response)
+        except:
+            raise
+        else:
+            pass
+
+
 
     def __parseNPCPricesFromHtml(self, html):
         """

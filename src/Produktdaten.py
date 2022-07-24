@@ -8,6 +8,7 @@ Created on 23.05.2019
  
 import json
 from src.Produkt import Product
+from src.HTTPCommunication import HTTPConnection
 
 CATEGORY_DECORATION       = 'd'
 CATEGORY_HERBS            = 'h'
@@ -21,7 +22,7 @@ CATEGORY_OTHER            = 'u'
 
 class ProductData():
     
-    def __init__(self, httpConnection):
+    def __init__(self, httpConnection: HTTPConnection):
         self.__httpConn = httpConnection
         self.__products = []
     
@@ -39,8 +40,8 @@ class ProductData():
                 product.setPriceNPC(dNPC[productname])
                 
         #Coin manuell setzen, dieser ist in der Tabelle der Hilfe nicht enthalten
-        coins = self.getProductByName('Coins')
-        coins.setPriceNPC((300.0))
+        #coins = self.getProductByName('Coins')
+        #coins.setPriceNPC((300.0))
     
     def getProductByID(self, id):
         for product in self.__products:
@@ -76,15 +77,15 @@ class ProductData():
             if key == '999':
                 continue
 
-                name = dictProducts[key]['name'].replace('&nbsp;', ' ')
-                self.__products.append(Product(id        = int(key), \
-                                               cat       = dictProducts[key]['category'], \
-                                               sx        = dictProducts[key]['sx'], \
-                                               sy        = dictProducts[key]['sy'], \
-                                               name      = name.encode('utf-8'), \
-                                               lvl       = dictProducts[key]['level'], \
-                                               crop      = dictProducts[key]['crop'], \
-                                               plantable = dictProducts[key]['plantable'], \
+            name = dictProducts[key]['name'].replace('&nbsp;', ' ')
+            self.__products.append(Product(id        = int(key), \
+                                            cat       = dictProducts[key]['category'], \
+                                            sx        = dictProducts[key]['sx'], \
+                                            sy        = dictProducts[key]['sy'], \
+                                            name      = name.encode('utf-8'), \
+                                            lvl       = dictProducts[key]['level'], \
+                                            crop      = dictProducts[key]['crop'], \
+                                            plantable = dictProducts[key]['plantable'], \
                                                time      = dictProducts[key]['time']))
                 
         self.__setAllPricesOfNPC()
