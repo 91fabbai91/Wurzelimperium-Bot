@@ -328,20 +328,19 @@ class HTTPConnection(object):
             'Connection': 'Keep-Alive'}
 
         adresse = 'http://s' + str(self.__Session.getServer()) + \
-                  '.wurzelimperium.de/ajax/ajax.php?do=park_clearcashpoint=' \
+                  '.wurzelimperium.de/ajax/ajax.php?do=park_clearcashpoint' \
                    + '&token=' + self.__token
 
         self.__goToPark()
         cashpoints = self.__initCashPoint()
-        if(cashpoints["money"]>0):
-            try:
-                response, content = self.__webclient.request(adresse, 'GET', headers = headers)
-                self.__checkIfHTTPStateIsOK(response)
-            except:
-                raise
-            else:
-                pass
-        return cashpoints
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers = headers)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+        except:
+            raise
+        else:
+            return jContent["data"]["data"]["cashpoint"]
 
     def getRenewableDekoFromPark(self,parkID=1):
         jContent = self.__goToPark()
